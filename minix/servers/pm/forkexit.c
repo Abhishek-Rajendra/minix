@@ -130,7 +130,7 @@ int do_fork()
   /* Do not reply until VFS is ready to process the fork
   * request
   */
-  printf("MINIX1:PID %d CREATED\n", rmp->mp_pid);
+  printf("MINIX:PID %d CREATED\n", rmp->mp_pid);
   return SUSPEND;
 }
 
@@ -222,7 +222,6 @@ int do_srv_fork()
 
   /* Wakeup the newly created process */
   reply(rmc-mproc, OK);
-  printf("MINIX2:PID %d CREATED\n", rmp->mp_pid);
   return rmc->mp_pid;
 }
 
@@ -243,8 +242,8 @@ int do_exit()
   }
   else {
       exit_proc(mp, m_in.m_lc_pm_exit.status, FALSE /*dump_core*/);
+      printf("MINIX1:PID %d EXITED\n", mp->mp_pid);
   }
-  printf("MINIX:PID %d EXITED\n", mp->mp_pid);
   return(SUSPEND);		/* can't communicate from beyond the grave */
 }
 
@@ -282,6 +281,8 @@ int dump_core;			/* flag indicating whether to dump core */
 
   /* Remember a session leader's process group. */
   procgrp = (rmp->mp_pid == mp->mp_procgrp) ? mp->mp_procgrp : 0;
+
+  printf("MINIX:PID %d EXITED\n", rmp->mp_pid);
 
   /* If the exited process has a timer pending, kill it. */
   if (rmp->mp_flags & ALARM_ON) set_alarm(rmp, (clock_t) 0);
