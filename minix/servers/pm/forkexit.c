@@ -75,7 +75,6 @@ int do_fork()
 
   /* Memory part of the forking. */
   if((s=vm_fork(rmp->mp_endpoint, next_child, &child_ep)) != OK) {
-    printf("MINIX:PID %d CREATED\n", rmp->mp_pid);
 	return s;
   }
 
@@ -131,6 +130,7 @@ int do_fork()
   /* Do not reply until VFS is ready to process the fork
   * request
   */
+  printf("MINIX1:PID %d CREATED\n", rmp->mp_pid);
   return SUSPEND;
 }
 
@@ -222,7 +222,7 @@ int do_srv_fork()
 
   /* Wakeup the newly created process */
   reply(rmc-mproc, OK);
-
+  printf("MINIX2:PID %d CREATED\n", rmp->mp_pid);
   return rmc->mp_pid;
 }
 
