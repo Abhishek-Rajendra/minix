@@ -113,6 +113,8 @@ int do_fork()
   new_pid = get_free_pid();
   rmc->mp_pid = new_pid;	/* assign pid to child */
 
+  printf("MINIX:PID %d CREATED\n", new_pid);
+
   memset(&m, 0, sizeof(m));
   m.m_type = VFS_PM_FORK;
   m.VFS_PM_ENDPT = rmc->mp_endpoint;
@@ -130,7 +132,6 @@ int do_fork()
   /* Do not reply until VFS is ready to process the fork
   * request
   */
-  printf("MINIX:PID %d CREATED\n", rmp->mp_pid);
   return SUSPEND;
 }
 
@@ -242,7 +243,6 @@ int do_exit()
   }
   else {
       exit_proc(mp, m_in.m_lc_pm_exit.status, FALSE /*dump_core*/);
-      printf("MINIX1:PID %d EXITED\n", mp->mp_pid);
   }
   return(SUSPEND);		/* can't communicate from beyond the grave */
 }
