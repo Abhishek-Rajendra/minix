@@ -282,7 +282,6 @@ int dump_core;			/* flag indicating whether to dump core */
   /* Remember a session leader's process group. */
   procgrp = (rmp->mp_pid == mp->mp_procgrp) ? mp->mp_procgrp : 0;
 
-  printf("MINIX:PID %d EXITED\n", rmp->mp_pid);
 
   /* If the exited process has a timer pending, kill it. */
   if (rmp->mp_flags & ALARM_ON) set_alarm(rmp, (clock_t) 0);
@@ -358,6 +357,8 @@ int dump_core;			/* flag indicating whether to dump core */
 
   rmp->mp_exitstatus = (char) exit_status;
 
+  printf("MINIX:PID %d EXITED\n", rmp->mp_pid);
+  
   /* For normal exits, try to notify the parent as soon as possible.
    * For core dumps, notify the parent only once the core dump has been made.
    */
