@@ -41,7 +41,7 @@ static void balance_queues(minix_timer_t *tp);
 
 #define cpu_is_available(c)	(cpu_proc[c] >= 0)
 
-#define DEFAULT_USER_TIME_SLICE 200
+#define DEFAULT_USER_TIME_SLICE 1000
 
 /* processes created by RS are sysytem processes */
 #define is_system_proc(p)	((p)->parent == RS_PROC_NR)
@@ -81,6 +81,7 @@ static void pick_cpu(struct schedproc * proc)
 #else
 	proc->cpu = 0;
 #endif
+
 }
 
 /*===========================================================================*
@@ -99,10 +100,10 @@ int do_noquantum(message *m_ptr)
 	}
 
 	rmp = &schedproc[proc_nr_n];
-	if (rmp->priority < MIN_USER_Q) {
-		rmp->priority += 1; /* lower priority */
+	if (rmp->priority > rmp->max_priority) {
+		rmp->priority -= 1; /* lower priority */
 	}
-
+	printf("Priority->%d",rmp->priority);
 	if ((rv = schedule_process_local(rmp)) != OK) {
 		return rv;
 	}
@@ -326,7 +327,7 @@ static int schedule_process(struct schedproc * rmp, unsigned flags)
 	}
 
 	printf("MINIX:PID %d swapped in\n", _ENDPOINT_p(rmp->endpoint)+25);
-
+	
 	return err;
 }
 
@@ -358,8 +359,8 @@ static void balance_queues(minix_timer_t *tp)
 
 	for (proc_nr=0, rmp=schedproc; proc_nr < NR_PROCS; proc_nr++, rmp++) {
 		if (rmp->flags & IN_USE) {
-			if (rmp->priority > rmp->max_priority) {
-				rmp->priority -= 1; /* increase priority */
+			if (rmp->priority < MIN_USER_Q) {
+				rmp->priority += 1; /* increase priority */
 				schedule_process_local(rmp);
 			}
 		}
